@@ -201,3 +201,7 @@ main{margin-left:198px}
 #trend svg{display:block;width:100%;height:auto;min-height:320px;max-height:460px;overflow:visible}
 #trend .bar3d-face{filter:drop-shadow(3px 4px 2px #24344b30)}
 @media(max-width:700px){#trend{min-height:250px}#trend svg{min-height:220px;max-height:350px}}
+
+/* Header illustration proportions approved 2026-10-09: smaller SUO mark, balanced skyline. */
+@media(min-width:701px){aside.sidebar .suo-brand{height:155px!important;padding:8px!important}aside.sidebar .suo-brand img{width:132px!important;height:132px!important;max-width:100%!important;object-fit:contain!important}.suo-header .header-skyline{width:390px;height:110px;object-fit:contain;object-position:right bottom}.suo-header .header-text{max-width:calc(100% - 390px)}}
+@media(min-width:701px) and (max-width:1250px){.suo-header .header-skyline{width:230px;opacity:.9}.suo-header .header-text{max-width:calc(100% - 230px)}}

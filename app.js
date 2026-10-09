@@ -3,7 +3,7 @@ let DATA=[];let filtered=[];const $=id=>document.getElementById(id);const MONTHS
 function render(){let m=$('month').value,p=$('pbt').value,j=$('jenis').value;filtered=DATA.filter(r=>(!m||r.tarikhRayuan.slice(5,7)===m)&&(!p||r.pbt===p)&&(!j||r.jenis===j));let done=filtered.filter(r=>r.status!=='Belum ada keputusan');$('total').textContent=filtered.length;$('done').textContent=done.length;$('pending').textContent=filtered.length-done.length;$('hearing').textContent=filtered.filter(r=>r.pendengaran.length).length;let durations=done.filter(r=>r.keputusanTarikh.length&&r.tarikhRayuan).map(r=>(new Date(r.keputusanTarikh[0])-new Date(r.tarikhRayuan))/86400000).filter(n=>n>=0);$('duration').textContent=durations.length?Math.round(durations.reduce((a,b)=>a+b,0)/durations.length)+' hari':'—';$('timePanel').innerHTML=durations.length?`<div class="bigstat">${$('duration').textContent}</div><p class="subtle">Purata dari tarikh rayuan hingga tarikh keputusan untuk ${durations.length} rekod lengkap.</p>`:'<p class="empty">Tiada tarikh lengkap untuk pengiraan</p>';
 const received=Array.from({length:12},(_,i)=>filtered.filter(r=>+r.tarikhRayuan.slice(5,7)===i+1).length),resolved=Array.from({length:12},(_,i)=>done.filter(r=>r.keputusanTarikh.some(d=>+d.slice(5,7)===i+1)).length);let max=Math.max(1,...received,...resolved),W=620,H=230,px=i=>40+i*49,py=n=>195-n/max*150;let grid=Array.from({length:5},(_,i)=>`<line x1="40" x2="610" y1="${py(max*i/4)}" y2="${py(max*i/4)}" stroke="#e1e8ef"/><text x="29" y="${py(max*i/4)+4}" font-size="11" fill="#68798e" text-anchor="end">${Math.round(max*i/4)}</text>`).join('');let path=a=>a.map((n,i)=>`${i?'L':'M'}${px(i)},${py(n)}`).join(' ');$('trend').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Trend rayuan bulanan">${grid}<path d="${path(received)}" fill="none" stroke="#cf1437" stroke-width="3"/><path d="${path(resolved)}" fill="none" stroke="#19a56e" stroke-width="3"/>${received.map((n,i)=>`<circle cx="${px(i)}" cy="${py(n)}" r="4" fill="#cf1437"><title>${MONTHS[i]}: ${n} diterima</title></circle>`).join('')}${resolved.map((n,i)=>`<circle cx="${px(i)}" cy="${py(n)}" r="4" fill="#19a56e"><title>${MONTHS[i]}: ${n} keputusan</title></circle>`).join('')}${MONTHS.map((v,i)=>`<text x="${px(i)}" y="216" font-size="11" fill="#65748b" text-anchor="middle">${v}</text>`).join('')}</svg>`;
 let groups=count(filtered,'status'),d=groups['Ditolak']||0,t=groups['Tarik diri']||0,b=groups['Belum ada keputusan']||0,total=filtered.length||1,deg=x=>x/total*360;$('donut').innerHTML=`<div class="donut" style="background:conic-gradient(#d52e49 0deg ${deg(d)}deg,#3985d3 ${deg(d)}deg ${deg(d+t)}deg,#f1b63d ${deg(d+t)}deg 360deg)"><div class="donut-inner">${filtered.length}<small>Jumlah kes</small></div></div><div class="legend-list">🔴 Ditolak: <b>${d}</b><br>🔵 Tarik diri: <b>${t}</b><br>🟡 Belum ada keputusan: <b>${b}</b></div>`;let types=count(filtered,'jenis');$('types').innerHTML=Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>bar(k,v,filtered.length)).join('')||'<p class="empty">Tiada rekod</p>';let pbts=count(filtered,'pbt');$('pbts').innerHTML=Object.entries(pbts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>bar(k,v,Math.max(1,...Object.values(pbts)))).join('')||'<p class="empty">Tiada rekod</p>';
-let hearings=filtered.flatMap(r=>(r.pendengaran||[]).map(date=>({...r,date}))).sort((a,b)=>a.date.localeCompare(b.date));let hr=r=>`<tr><td>${fmt(r.date)}</td><td>${detailBtn(r)}</td><td>${esc(r.pbt)}</td><td>${esc(r.jenis)}</td><td>${badge(r.status)}</td></tr>`;$('upcoming').innerHTML=table(['Tarikh','No. Rayuan','PBT','Jenis','Status'],hearings.slice(0,5).map(hr));$('hearingTable').innerHTML=table(['Tarikh','No. Rayuan','PBT','Jenis','Status'],hearings.map(hr));let decisions=filtered.filter(r=>r.status!=='Belum ada keputusan');$('decisionTable').innerHTML=table(['No. Rayuan','PBT','Keputusan','Tarikh keputusan'],decisions.map(r=>`<tr><td>${detailBtn(r)}</td><td>${esc(r.pbt)}</td><td>${badge(r.status)}</td><td>${r.keputusanTarikh.map(fmt).join(', ')||'—'}</td></tr>`));let cats=[['Ditolak',d],['Tarik diri',t],['Belum ada keputusan',b]],highest=Math.max(1,...cats.map(x=>x[1]));$('decisionBars').innerHTML=`<div class="decisionbox">${cats.map(([k,v])=>`<div class="decisioncol"><b>${v}</b><div style="height:${Math.max(4,v/highest*125)}px"></div>${k}</div>`).join('')}</div>`;renderCases();}
+let hearings=filtered.flatMap(r=>(r.pendengaran||[]).map(date=>({...r,date}))).sort((a,b)=>a.date.localeCompare(b.date));let hr=r=>`<tr><td>${fmt(r.date)}</td><td>${detailBtn(r)}</td><td>${esc(r.pbt)}</td><td>${esc(r.jenis)}</td><td>${badge(r.status)}</td></tr>`;$('upcoming').innerHTML=table(['Tarikh','No. Rayuan','PBT','Jenis','Status'],hearings.slice(0,5).map(hr));$('hearingTable').innerHTML=table(['Tarikh','No. Rayuan','PBT','Jenis','Status'],hearings.map(hr));let decisions=filtered.filter(r=>r.status!=='Belum ada keputusan');$('decisionTable').innerHTML=table(['No. Rayuan','PBT','Keputusan','Tarikh keputusan'],decisions.map(r=>`<tr><td>${detailBtn(r)}</td><td>${esc(r.pbt)}</td><td>${badge(r.status)}</td><td>${r.keputusanTarikh.map(fmt).join(', ')||'—'}</td></tr>`));let cats=[['Ditolak',d],['Tarik diri',t],['Belum ada keputusan',b]],highest=Math.max(1,...cats.map(x=>x[1]));$('decisionBars').innerHTML=`<div class="decisionbox">${cats.map(([k,v])=>`<div class="decisioncol"><b>${v}</b><div style="height:${Math.max(4,v/highest*125)}px"></div>${k}</div>`).join('')}</div>`;renderCases();renderOfficialMap();}
 function renderCases(){let q=$('search').value.toLocaleLowerCase();let a=filtered.filter(r=>[r.bil,r.pbt,r.jenis,r.status].join(' ').toLocaleLowerCase().includes(q));$('caseTable').innerHTML=table(['No. Rayuan','Tarikh Rayuan','Jenis Rayuan','PBT','Kategori','Status'],a.map(r=>`<tr><td>${detailBtn(r)}</td><td>${fmt(r.tarikhRayuan)}</td><td>${esc(r.jenis)}</td><td>${esc(r.pbt)}</td><td>${esc(r.jenis)}</td><td>${badge(r.status)}</td></tr>`));}
 function showCase(bil){let r=DATA.find(r=>r.bil===+bil);if(!r)return;let fields=[['Tarikh Rayuan',fmt(r.tarikhRayuan)],['Pihak Berkuasa Tempatan',r.pbt],['Jenis Rayuan',r.jenis],['Status',r.status],['Tarikh Pendengaran',(r.pendengaran||[]).map(fmt).join(', ')||'—'],['Tarikh Keputusan',(r.keputusanTarikh||[]).map(fmt).join(', ')||'—']];$('detailBody').innerHTML=`<h2>LR/2026/${String(r.bil).padStart(3,'0')}</h2>${fields.map(([k,v])=>`<div class="detail-row"><b>${esc(k)}</b>${esc(v||'—')}</div>`).join('')}`;$('detail').showModal();}
 function nav(page){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('hidden',e.id!==page));document.querySelectorAll('.nav').forEach(e=>e.classList.toggle('active',e.dataset.page===page));window.scrollTo(0,0)}
@@ -11,3 +11,48 @@ function exportCsv(){let fields=['bil','tarikhRayuan','pbt','jenis','status'];le
 fetch('data.json').then(r=>{if(!r.ok)throw Error('Gagal membaca data');return r.json()}).then(data=>{DATA=data;let ps=[...new Set(DATA.map(r=>r.pbt))].sort();ps.forEach(p=>$('pbt').add(new Option(p,p)));[...new Set(DATA.map(r=>r.jenis))].sort().forEach(j=>$('jenis').add(new Option(j,j)));MONTHS.forEach((m,i)=>$('month').add(new Option(m,String(i+1).padStart(2,'0'))));render();}).catch(e=>{$('overview').insertAdjacentHTML('afterbegin',`<p class="empty">${esc(e.message)}. Jalankan melalui pelayan web / GitHub Pages, bukan membuka fail HTML terus.</p>`)});document.querySelectorAll('.filters select').forEach(e=>e.addEventListener('change',()=>{if(e.target.id==='pbt')render()}));$('reset').onclick=()=>{['month','pbt','jenis'].forEach(k=>$(k).value='');$('search').value='';render()};$('search').addEventListener('input',renderCases);document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>nav(b.dataset.page));document.addEventListener('click',e=>{let b=e.target.closest('[data-case]');if(b)showCase(b.dataset.case);let n=e.target.closest('[data-goto]');if(n)nav(n.dataset.goto)});$('close').onclick=()=>$('detail').close();$('csv').onclick=exportCsv;
 
 
+
+
+const OFFICIAL_PBT_CODES={
+ 'Majlis Daerah Sabak Bernam':'MDSB','Majlis Perbandaran Kuala Selangor':'MPKS',
+ 'Majlis Bandaraya Subang Jaya':'MBSJ','Majlis Bandaraya Petaling Jaya':'MBPJ',
+ 'Majlis Perbandaran Kuala Langat':'MPKL','Majlis Perbandaran Hulu Selangor':'MPHS',
+ 'Majlis Perbandaran Sepang':'MPSEPANG','Majlis Perbandaran Kajang':'MPKJ',
+ 'Majlis Perbandaran Ampang Jaya':'MPAJ','Majlis Perbandaran Selayang':'MPS',
+ 'Majlis Bandaraya Shah Alam':'MBSA','Majlis Bandaraya Diraja Klang':'MBDK'
+};
+let OFFICIAL_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null;
+function renderOfficialMap(){
+ const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!info)return;
+ if(!OFFICIAL_GEOJSON){host.textContent='Memuatkan sempadan PBT…';return}
+ if(!window.L){host.textContent='Pustaka peta tidak tersedia.';return}
+ const chosen=$('pbt').value,month=$('month').value,jenis=$('jenis').value;
+ const comparison=DATA.filter(r=>(!month||r.tarikhRayuan.slice(5,7)===month)&&(!jenis||r.jenis===jenis));
+ const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
+ if(!OFFICIAL_MAP){
+   OFFICIAL_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true,preferCanvas:true});
+   OFFICIAL_LAYER=L.geoJSON(OFFICIAL_GEOJSON,{
+     style:()=>({color:'#fff',weight:1.5,fillColor:'#b4c3d4',fillOpacity:.75}),
+     onEachFeature:(f,layer)=>{
+       const name=f.properties.NAMA_PBT,code=OFFICIAL_PBT_CODES[name];
+       layer.on('click',()=>{$('pbt').value=code;render()});
+       layer.on('mouseover',()=>layer.setStyle({weight:3,color:'#e9b33b'}));
+       layer.on('mouseout',()=>OFFICIAL_LAYER.resetStyle(layer));
+     }
+   }).addTo(OFFICIAL_MAP);
+   OFFICIAL_MAP.fitBounds(OFFICIAL_LAYER.getBounds(),{padding:[20,20]});
+ }
+ OFFICIAL_LAYER.eachLayer(layer=>{
+   const name=layer.feature.properties.NAMA_PBT,code=OFFICIAL_PBT_CODES[name],n=counts[code]||0;
+   layer.setStyle({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.9:.76,color:code===chosen?'#e9b33b':'#fff',weight:code===chosen?4:1.5});
+   layer.bindTooltip(esc(name)+' — '+n+' rayuan',{sticky:true});
+ });
+ const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen);
+ const selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
+ const statuses=count(selectedRows,'status'),types=count(selectedRows,'jenis');
+ const rows=obj=>Object.entries(obj).map(([k,v])=>'<div class="official-map-row"><span>'+esc(k)+'</span><strong>'+v+'</strong></div>').join('');
+ info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'Seluruh Negeri Selangor')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(statuses)||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(types)||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button><p class="muted">Sempadan daripada fail GeoJSON dibekalkan; jumlah kes daripada data Excel dashboard.</p>';
+ $('officialMapReset').onclick=()=>{$('pbt').value='';render();OFFICIAL_MAP.fitBounds(OFFICIAL_LAYER.getBounds(),{padding:[20,20]})};
+ setTimeout(()=>OFFICIAL_MAP.invalidateSize(),0);
+}
+fetch('sempadan-pbt-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail sempadan tidak ditemui');return r.json()}).then(g=>{OFFICIAL_GEOJSON=g;renderOfficialMap()}).catch(e=>{const h=$('officialPbtMap');if(h)h.textContent='Gagal memuatkan peta: '+e.message});

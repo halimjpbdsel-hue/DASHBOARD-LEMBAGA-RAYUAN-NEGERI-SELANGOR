@@ -59,6 +59,7 @@ function renderOfficialMap(){
  if(DISTRICT_GEOJSON&&!DISTRICT_LAYER){DISTRICT_LAYER=L.geoJSON(DISTRICT_GEOJSON,{style:{color:'#f8bc33',weight:2.2,fillOpacity:0,opacity:.95},interactive:false}).addTo(OFFICIAL_MAP)}
  if(DISTRICT_LAYER){const enabled=$('showDistrictBoundary').checked;if(enabled&&!OFFICIAL_MAP.hasLayer(DISTRICT_LAYER))DISTRICT_LAYER.addTo(OFFICIAL_MAP);if(!enabled&&OFFICIAL_MAP.hasLayer(DISTRICT_LAYER))OFFICIAL_MAP.removeLayer(DISTRICT_LAYER)}
  if(OFFICIAL_LAYER){const enabled=$('showPbtBoundary').checked;if(enabled&&!OFFICIAL_MAP.hasLayer(OFFICIAL_LAYER))OFFICIAL_LAYER.addTo(OFFICIAL_MAP);if(!enabled&&OFFICIAL_MAP.hasLayer(OFFICIAL_LAYER))OFFICIAL_MAP.removeLayer(OFFICIAL_LAYER)}
+ addLeafletPbtLogos();
  OFFICIAL_LAYER.eachLayer(layer=>{
    const name=layer.feature.properties.NAMA_PBT,code=OFFICIAL_PBT_CODES[name],n=counts[code]||0;
    layer.setStyle({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.9:.76,color:code===chosen?'#e9b33b':'#fff',weight:code===chosen?4:1.5});
@@ -94,6 +95,7 @@ function renderGooglePbtMap(){
  const comparison=DATA.filter(r=>(!month||r.tarikhRayuan.slice(5,7)===month)&&(!jenis||r.jenis===jenis));
  const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
  if(DISTRICT_GEOJSON&&!GOOGLE_DISTRICT_LAYERS.length){DISTRICT_GEOJSON.features.forEach(f=>{const polys=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];polys.forEach(poly=>{const paths=poly.map(ring=>ring.map(([lng,lat])=>({lat,lng})));GOOGLE_DISTRICT_LAYERS.push(new google.maps.Polygon({paths,map:GOOGLE_MAP,strokeColor:'#f8bc33',strokeWeight:2.2,strokeOpacity:.95,fillOpacity:0,clickable:false,zIndex:3}))})})}
+ addGooglePbtLogos();
  GOOGLE_DISTRICT_LAYERS.forEach(p=>p.setMap($('showDistrictBoundary').checked?GOOGLE_MAP:null));
  GOOGLE_LAYERS.forEach(p=>{p.setMap($('showPbtBoundary').checked?GOOGLE_MAP:null);const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
  const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen),selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
@@ -114,3 +116,36 @@ fetch('sempadan-pbt-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail sempa
 
 fetch('sempadan-daerah-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail daerah tidak ditemui');return r.json()}).then(g=>{DISTRICT_GEOJSON=g;renderOfficialMap()}).catch(e=>console.warn('Sempadan daerah:',e.message));
 ['showPbtBoundary','showDistrictBoundary'].forEach(id=>$(id)?.addEventListener('change',renderOfficialMap));
+
+
+/* PBT crest markers: same GeoJSON boundary positions, unaffected by map filters. */
+const PBT_LOGO_ORDER=['MBSA','MBPJ','MDSB','MBDK','MPKL','MPKJ','MBSJ','MPAJ','MPS','MPHS','MPKS','MPSEPANG'];
+const PBT_LOGO_INDEX=Object.fromEntries(PBT_LOGO_ORDER.map((code,i)=>[code,i]));
+let PBT_LOGO_LAYER=null,GOOGLE_PBT_LOGOS=[];
+function pbtLogoPosition(f){
+ const rings=f.geometry.type==='MultiPolygon'?f.geometry.coordinates.flatMap(p=>p):f.geometry.coordinates;
+ const outer=rings.reduce((a,b)=>b.length>a.length?b:a,[]);
+ if(!outer.length)return null;
+ // Polygon area-weighted centroid, with bounds fallback for degenerate rings.
+ let twice=0,lng=0,lat=0;
+ for(let i=0;i<outer.length;i++){const a=outer[i],b=outer[(i+1)%outer.length],cross=a[0]*b[1]-b[0]*a[1];twice+=cross;lng+=(a[0]+b[0])*cross;lat+=(a[1]+b[1])*cross;}
+ if(Math.abs(twice)>1e-10)return [lat/(3*twice),lng/(3*twice)];
+ return [(Math.min(...outer.map(p=>p[1]))+Math.max(...outer.map(p=>p[1])))/2,(Math.min(...outer.map(p=>p[0]))+Math.max(...outer.map(p=>p[0])))/2];
+}
+function pbtLogoHtml(code){const i=PBT_LOGO_INDEX[code];return '<span class="pbt-logo-sprite" style="background-position:-'+(i%4*50)+'px -'+(Math.floor(i/4)*50)+'px" aria-label="Logo '+esc(code)+'"></span>'}
+function addLeafletPbtLogos(){
+ if(!OFFICIAL_MAP||!OFFICIAL_GEOJSON||PBT_LOGO_LAYER)return;
+ PBT_LOGO_LAYER=L.layerGroup();
+ OFFICIAL_GEOJSON.features.forEach(f=>{const code=OFFICIAL_PBT_CODES[f.properties.NAMA_PBT],pos=pbtLogoPosition(f);if(!(code in PBT_LOGO_INDEX)||!pos)return;
+ const icon=L.divIcon({className:'pbt-crest-marker',html:pbtLogoHtml(code),iconSize:[50,50],iconAnchor:[25,25]});
+ L.marker(pos,{icon,keyboard:true,alt:'Logo '+code,zIndexOffset:2000,title:f.properties.NAMA_PBT}).on('click',()=>{$('pbt').value=code;render()}).addTo(PBT_LOGO_LAYER);
+ });
+ PBT_LOGO_LAYER.addTo(OFFICIAL_MAP);
+}
+function addGooglePbtLogos(){
+ if(!GOOGLE_MAP||!OFFICIAL_GEOJSON||GOOGLE_PBT_LOGOS.length)return;
+ OFFICIAL_GEOJSON.features.forEach(f=>{const code=OFFICIAL_PBT_CODES[f.properties.NAMA_PBT],pos=pbtLogoPosition(f),i=PBT_LOGO_INDEX[code];if(i===undefined||!pos)return;
+ const marker=new google.maps.Marker({map:GOOGLE_MAP,position:{lat:pos[0],lng:pos[1]},title:f.properties.NAMA_PBT,icon:{url:'pbt-logo-sprite.png',size:new google.maps.Size(50,50),origin:new google.maps.Point(i%4*50,Math.floor(i/4)*50),anchor:new google.maps.Point(25,25)},zIndex:1000});
+ marker.addListener('click',()=>{$('pbt').value=code;render()});GOOGLE_PBT_LOGOS.push(marker);
+ });
+}

@@ -21,7 +21,7 @@ const OFFICIAL_PBT_CODES={
  'Majlis Perbandaran Ampang Jaya':'MPAJ','Majlis Perbandaran Selayang':'MPS',
  'Majlis Bandaraya Shah Alam':'MBSA','Majlis Bandaraya Diraja Klang':'MBDK'
 };
-let OFFICIAL_GEOJSON=null,DISTRICT_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null,DISTRICT_LAYER=null,GOOGLE_MAP=null,GOOGLE_LAYERS=[],GOOGLE_DISTRICT_LAYERS=[];
+let OFFICIAL_GEOJSON=null,DISTRICT_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null,DISTRICT_LAYER=null,GOOGLE_MAP=null,GOOGLE_LAYERS=[],GOOGLE_DISTRICT_LAYERS=[],BASEMAP_CONTROL=null;
 function renderOfficialMap(){
  const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!info)return;
  if(!OFFICIAL_GEOJSON){host.textContent='Memuatkan sempadan PBT…';return}
@@ -32,6 +32,18 @@ function renderOfficialMap(){
  const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
  if(!OFFICIAL_MAP){
    OFFICIAL_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true,preferCanvas:true});
+   // Street basemap is the reliable default. Satellite is an optional layer.
+   const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});
+   const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors © CARTO'});
+   const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Imagery © Esri and contributors'});
+   const basemaps={'Peta Jalan':street,'Peta Cerah':light,'Satelit (Esri)':satellite};
+   street.addTo(OFFICIAL_MAP);
+   BASEMAP_CONTROL=L.control.layers(basemaps,null,{position:'topright',collapsed:true}).addTo(OFFICIAL_MAP);
+   // Keep a working street map when satellite imagery fails to load.
+   let satelliteErrors=0;
+   satellite.on('tileerror',()=>{if(++satelliteErrors>=3&&OFFICIAL_MAP.hasLayer(satellite)){OFFICIAL_MAP.removeLayer(satellite);street.addTo(OFFICIAL_MAP);satelliteErrors=0}});
+   OFFICIAL_MAP.on('baselayerchange',e=>{if(e.layer!==satellite)satelliteErrors=0});
+
    OFFICIAL_LAYER=L.geoJSON(OFFICIAL_GEOJSON,{
      style:()=>({color:'#fff',weight:1.5,fillColor:'#b4c3d4',fillOpacity:.75}),
      onEachFeature:(f,layer)=>{

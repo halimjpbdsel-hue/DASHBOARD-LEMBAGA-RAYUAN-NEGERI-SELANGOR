@@ -120,3 +120,10 @@ main{margin-left:198px}
 #pbts .barfill.pbt-color-fill{border-radius:6px!important}
 #pbts .barrow b{font-weight:700!important;color:#10234c!important}
 @media(max-width:650px){#pbts .barrow.pbt-color-row{grid-template-columns:minmax(110px,33%) minmax(0,1fr) 20px!important;gap:7px!important}#pbts .pbt-bar-label{gap:6px!important;font-size:10px!important}#pbts .pbt-bar-crest{transform:scale(.82);transform-origin:left center;flex-basis:42px!important}}
+
+/* Final approved original PBT chart: no crests, labels close to bars. */
+#pbts .barrow.pbt-color-row{display:grid!important;grid-template-columns:minmax(80px,25%) minmax(0,1fr) 28px!important;gap:8px!important;min-height:27px!important;margin:0!important;align-items:center!important;font-size:11px!important}
+#pbts .pbt-bar-label{display:block!important;font-size:11px!important;font-weight:400!important;color:#10234c!important}
+#pbts .bartrack{height:13px!important;border-radius:4px!important}
+#pbts .barfill.pbt-color-fill{border-radius:4px!important}
+@media(max-width:650px){#pbts .barrow.pbt-color-row{grid-template-columns:minmax(75px,27%) minmax(0,1fr) 22px!important;gap:6px!important}}

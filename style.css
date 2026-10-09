@@ -213,3 +213,7 @@ main{margin-left:198px}
 /* Make the actual skyline artwork visibly larger, not merely its image box. */
 @media(min-width:1251px){.suo-header .header-skyline{width:440px!important;height:114px!important;transform:scale(1.38)!important;transform-origin:right bottom!important;right:0!important;bottom:0!important;opacity:1!important}.suo-header .header-text{z-index:2!important}}
 @media(min-width:951px) and (max-width:1250px){.suo-header .header-skyline{transform:scale(1.2)!important;transform-origin:right bottom!important;opacity:1!important}}
+
+/* Larger, bold dashboard section headings (all requested analytical panels). */
+#overview .panel h2{font-size:17px!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.1px!important;color:#d71932!important;margin-bottom:18px!important}
+@media(max-width:700px){#overview .panel h2{font-size:15px!important;line-height:1.4!important}}

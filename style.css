@@ -15,3 +15,5 @@
 
 /* Keep the basemap picker visible above all polygon overlays. */
 .official-map-panel .leaflet-control-layers{border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 12px #20304044;border-radius:8px}.official-map-panel .leaflet-control-layers-expanded{padding:10px 14px;font-size:12px;min-width:145px}.official-map-panel .leaflet-control-layers-list label{padding:5px 0;cursor:pointer}.official-map-panel .leaflet-control-layers-toggle{width:40px;height:40px}
+
+#pbts .barrow .barfill.pbt-color-fill,#pbts .barrow:nth-child(even) .barfill.pbt-color-fill,#pbts .barrow:nth-child(3n) .barfill.pbt-color-fill{background:var(--pbt-bar-color,#7686a6)!important;background-image:none!important}

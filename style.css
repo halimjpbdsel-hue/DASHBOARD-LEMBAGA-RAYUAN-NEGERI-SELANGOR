@@ -17,3 +17,38 @@
 .official-map-panel .leaflet-control-layers{border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 12px #20304044;border-radius:8px}.official-map-panel .leaflet-control-layers-expanded{padding:10px 14px;font-size:12px;min-width:145px}.official-map-panel .leaflet-control-layers-list label{padding:5px 0;cursor:pointer}.official-map-panel .leaflet-control-layers-toggle{width:40px;height:40px}
 
 #pbts .barrow .barfill.pbt-color-fill,#pbts .barrow:nth-child(even) .barfill.pbt-color-fill,#pbts .barrow:nth-child(3n) .barfill.pbt-color-fill{background:var(--pbt-bar-color,#7686a6)!important;background-image:none!important}
+
+
+/* Warm red-orange SUO-inspired visual theme; layout and dashboard behavior unchanged. */
+body{background:#fffaf4;color:#15223b}
+.sidebar{background:linear-gradient(180deg,#fffdf9 0%,#fff4e7 100%);color:#15223b;border-right:1px solid #f0dcc9;box-shadow:2px 0 12px #5b35220b}
+.seal{color:#e84c25}
+.side-title{color:#15223b}
+.side-title span{color:#d93137}
+.sidebar .nav{color:#25314b}
+.sidebar .nav:hover,.sidebar .nav.active{background:linear-gradient(105deg,#d81736,#ff9e10);color:#fff;box-shadow:0 3px 10px #df623333}
+.side-foot{border-top:1px solid #eddac9;color:#29334a}
+.side-foot small{color:#687083}
+header{background:linear-gradient(112deg,#ffffff 0%,#fffdf9 72%,#fff1d9 100%);color:#16233d;border-bottom:2px solid #f4d6b4}
+header .eyebrow{color:#e34c28}
+header h1{font-size:clamp(23px,2.2vw,32px);color:#15213a}
+header h1 em{color:#d92538}
+header .tagline{color:#6e7383}
+header .header-right{color:#15213a}
+header .header-right small{color:#dc6a16}
+.filters{background:#fffaf4}
+.filters button,.primary{background:linear-gradient(100deg,#cf1736,#ff9b12);color:#fff}
+select,.search{border-color:#e7d8ca}
+.kpi,.panel{border-color:#eadfd5;box-shadow:0 2px 8px #8a4b1b0a}
+.red .symbol{background:linear-gradient(135deg,#ce1639,#f04d55)}
+.green .symbol{background:linear-gradient(135deg,#ed6a1c,#ffa53a)}
+.orange .symbol{background:linear-gradient(135deg,#e98b15,#f8bb46)}
+.purple .symbol{background:linear-gradient(135deg,#d72741,#f46c69)}
+.blue .symbol{background:linear-gradient(135deg,#e77a21,#ffb652)}
+.panel h2{color:#cf2535}
+.official-map-panel h2,.charts.lower h2,.charts.bottom h2{border-left:4px solid #f04b2d;padding-left:9px}
+.smallbutton{background:#fff0e3;color:#a72c2e}
+th{background:#fff0e6}
+tr:hover td{background:#fff9f2}
+.link{color:#cf2535}
+footer{color:#85746c}

@@ -12,25 +12,30 @@ fetch('data.json').then(r=>{if(!r.ok)throw Error('Gagal membaca data');return r.
 
 
 function showPbtPopup(code){const f=BOUNDARIES.features.find(x=>x.properties.code===code),el=$('mapPopup');if(!f||!el)return;const rows=filtered.filter(x=>x.pbt===code),status=count(rows,'status'),types=count(rows,'jenis');const months=Array.from({length:12},(_,i)=>rows.filter(x=>Number(x.tarikhRayuan.slice(5,7))===i+1).length),peak=Math.max(1,...months);const lines=obj=>Object.entries(obj).map(([k,v])=>'<div class="popup-line"><span>'+esc(k)+'</span><b>'+v+'</b></div>').join('');el.innerHTML='<button class="popup-close" id="closeMapPopup">Tutup ×</button><h3>'+esc(f.properties.name)+'</h3><div class="popup-total">'+rows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+lines({'Ditolak':status['Ditolak']||0,'Tarik diri':status['Tarik diri']||0,'Belum ada keputusan':status['Belum ada keputusan']||0})+'<h4>Jenis rayuan</h4>'+(lines(types)||'<p>Tiada rekod</p>')+'<h4>Trend bulanan 2026</h4><div class="popup-trend">'+months.map((n,i)=>'<div class="popup-month"><div class="popup-track"><div style="height:'+(n/peak*100)+'%"></div></div><span>'+MONTHS[i]+'</span><b>'+n+'</b></div>').join('')+'</div><p class="muted">Berdasarkan bulan rayuan diterima dan penapis semasa.</p>';el.hidden=false;$('closeMapPopup').onclick=()=>{MAP_POPUP_PBT='';el.hidden=true}}
+let LEAFLET_MAP=null,MAP_LAYER=null,MAP_FEATURES={};
+function selectMapPbt(code){MAP_POPUP_PBT=code;$('pbt').value=code;render();if(code&&MAP_FEATURES[code]){LEAFLET_MAP.fitBounds(MAP_FEATURES[code].getBounds(),{padding:[25,25],maxZoom:11});showPbtPopup(code)}else if(LEAFLET_MAP)LEAFLET_MAP.fitBounds([[2.55,100.75],[3.85,102.05]])}
 function renderPbtMap(){
  const host=$('pbtMap'),summary=$('pbtMapSummary');if(!host||!summary)return;
  if(!BOUNDARIES){host.textContent='Peta sedang dimuatkan…';return}
- const counts=count(filtered,'pbt'), max=Math.max(1,...Object.values(counts));
- const selected=$('pbt').value;
- const project=point=>[(point[0]-100.73)*580/1.32+22,(3.95-point[1])*480/1.47+14];
- const ringPath=ring=>ring.map((pt,i)=>{let [x,y]=project(pt);return(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)}).join(' ')+'Z';
+ const counts=count(filtered,'pbt'),max=Math.max(1,...Object.values(counts)),selected=$('pbt').value;
+ if(!window.L){host.textContent='Pustaka peta tidak dapat dimuatkan. Semak sambungan internet.';return}
+ if(!LEAFLET_MAP){
+  LEAFLET_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true}).setView([3.18,101.47],9);
+  const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles © Esri, Maxar, Earthstar Geographics, and the GIS User Community',maxZoom:19});
+  const streets=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19});
+  satellite.addTo(LEAFLET_MAP);L.control.layers({'Satelit':satellite,'Peta Jalan':streets},null,{position:'topright'}).addTo(LEAFLET_MAP);
+  MAP_LAYER=L.geoJSON(BOUNDARIES,{style:()=>({color:'#ffffff',weight:1.8,fillOpacity:.42}),onEachFeature:(feature,layer)=>{const code=feature.properties.code;MAP_FEATURES[code]=layer;layer.on('click',()=>selectMapPbt(code));layer.on('mouseover',()=>layer.setStyle({weight:3,color:'#f6c453'}));layer.on('mouseout',()=>MAP_LAYER.resetStyle(layer))}}).addTo(LEAFLET_MAP);
+  LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});
+  $('mapHome').onclick=()=>{LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});};
+  $('mapSearch').addEventListener('change',e=>{const q=e.target.value.trim().toLocaleLowerCase();if(!q)return;const f=BOUNDARIES.features.find(f=>f.properties.name.toLocaleLowerCase().includes(q)||f.properties.code.toLocaleLowerCase().includes(q));if(f)selectMapPbt(f.properties.code)});
+ }
+ MAP_LAYER.eachLayer(layer=>{const code=layer.feature.properties.code,n=counts[code]||0;layer.setStyle({color:code===selected?'#ffd166':'#ffffff',weight:code===selected?4:1.8,fillColor:n===0?'#a6b5c8':n/max>=.7?'#b20f30':n/max>=.4?'#ed5366':'#ffb1bb',fillOpacity:n===0?.2:.56});layer.bindTooltip(esc(layer.feature.properties.name)+'<br>'+n+' rayuan',{sticky:true})});
  const features=BOUNDARIES.features;
- host.innerHTML='<svg viewBox="0 0 640 510" role="img" aria-label="Peta sempadan 12 PBT Selangor">'+features.map(f=>{
-  const c=f.properties.code,n=counts[c]||0,active=selected===c;
-  const rings=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
-  const d=rings.flatMap(p=>p.map(ringPath)).join(' ');
-  const fill=n===0?'#e5eaf1':n/max>=.7?'#af1231':n/max>=.4?'#e64d62':'#f7a5aa';
-  const coords=f.geometry.coordinates[0][0],centroid=coords.reduce((a,p)=>[a[0]+p[0],a[1]+p[1]],[0,0]).map(x=>x/coords.length),[x,y]=project(centroid);
-  return '<g class="map-region '+(active?'selected':'')+'" data-pbt="'+esc(c)+'" tabindex="0" role="button" aria-label="'+esc(f.properties.name)+': '+n+' rayuan"><title>'+esc(f.properties.name)+' — '+n+' rayuan</title><path d="'+d+'" fill="'+fill+'" fill-rule="evenodd" stroke="'+(active?'#f1b63d':'#fff')+'" stroke-width="'+(active?3:1.6)+'"/><text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" text-anchor="middle" pointer-events="none" font-size="10" font-weight="bold" fill="'+(n/max>=.7&&n>0?'#fff':'#172744')+'">'+esc(c)+'</text></g>';
- }).join('')+'</svg>';
- summary.innerHTML='<div class="map-total"><strong>'+filtered.length+'</strong><span>Rayuan dipaparkan</span></div><p class="muted">Pilih nama PBT untuk melihat statistik dan rekod berkaitan.</p><div class="map-pbt-list">'+features.map(f=>{let c=f.properties.code,n=counts[c]||0;return '<button class="map-pbt-row '+(selected===c?'active':'')+'" data-pbt="'+esc(c)+'"><span>'+esc(f.properties.name)+'</span><b>'+n+'</b></button>'}).join('')+'</div><button class="smallbutton map-clear" data-pbt="">Papar semua PBT</button>';
+ summary.innerHTML='<div class="map-total"><strong>'+filtered.length+'</strong><span>Rayuan dipaparkan</span></div><p class="muted">Klik kawasan PBT pada peta satelit atau pilih PBT di bawah.</p><div class="map-pbt-list">'+features.map(f=>{let c=f.properties.code,n=counts[c]||0;return '<button class="map-pbt-row '+(selected===c?'active':'')+'" data-pbt="'+esc(c)+'"><span>'+esc(f.properties.name)+'</span><b>'+n+'</b></button>'}).join('')+'</div><button class="smallbutton map-clear" data-pbt="">Papar semua PBT</button>';
  if(MAP_POPUP_PBT)showPbtPopup(MAP_POPUP_PBT);else if($('mapPopup'))$('mapPopup').hidden=true;
+ setTimeout(()=>LEAFLET_MAP.invalidateSize(),0);
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-pbt]');if(b&&b.closest('#pbtMap, #pbtMapSummary')){MAP_POPUP_PBT=b.dataset.pbt;$('pbt').value=b.dataset.pbt;render()}});
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pbt]');if(b&&b.closest('#pbtMap, #pbtMapSummary')){selectMapPbt(b.dataset.pbt)}});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('#pbtMap [data-pbt]')){e.preventDefault();MAP_POPUP_PBT=e.target.dataset.pbt;$('pbt').value=e.target.dataset.pbt;render()}});
 fetch('pbt-boundaries.geojson').then(r=>{if(!r.ok)throw Error('Fail peta tidak ditemui');return r.json()}).then(g=>{BOUNDARIES=g;renderPbtMap()}).catch(e=>{if($('pbtMap'))$('pbtMap').textContent='Tidak dapat memuatkan peta: '+e.message});

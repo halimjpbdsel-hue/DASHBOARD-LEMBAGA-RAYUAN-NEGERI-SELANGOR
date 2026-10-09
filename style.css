@@ -143,3 +143,34 @@ main{margin-left:198px}
 .official-map-canvas .map-north-arrow{width:43px!important;height:49px!important;box-sizing:border-box!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;top:14px!important;left:60px!important;line-height:normal!important;pointer-events:none!important}
 .official-map-canvas .map-north-arrow svg{width:43px!important;height:48px!important;display:block!important;filter:drop-shadow(0 1px 1px rgba(255,255,255,.75))}
 @media(max-width:600px){.official-map-canvas .map-north-arrow{top:12px!important;left:54px!important;padding:0!important}}
+
+/* Approved SUO mockup: five elevated infographic KPI cards and cream sidebar.
+   Purely presentational; all existing live figures, filters, maps and charts remain. */
+.sidebar{background:linear-gradient(180deg,#fff 0%,#fff9f2 100%)!important;color:#102347!important;border-right:1px solid #f0ded0!important;box-shadow:2px 0 14px #8f43100c!important}
+.suo-brand{background:transparent!important;border:0!important;box-shadow:none!important}
+.suo-brand img{max-width:90%!important;object-fit:contain!important}
+.sidebar nav{display:grid!important;gap:13px!important;padding:12px 10px!important}
+.sidebar .nav{position:relative!important;display:flex!important;align-items:center!important;min-height:64px!important;padding:16px 20px!important;border-radius:17px!important;background:linear-gradient(180deg,#fff,#fff8f5)!important;border:1px solid #ffe3dc!important;color:#102347!important;font-size:15px!important;font-weight:800!important;box-shadow:0 5px 12px #c8372417!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.sidebar .nav::after{content:'›';position:absolute;right:15px;font-size:26px;line-height:1;color:#657387}
+.sidebar .nav:hover{transform:translateX(3px);box-shadow:0 8px 18px #d7323024!important}
+.sidebar .nav.active{background:linear-gradient(110deg,#db092d 0%,#ef3428 46%,#ff9808 100%)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 7px 16px #e93e343f!important}
+.sidebar .nav.active::after{color:#fff}
+.sidebar .side-foot{border-top:1px solid #f1e2d7!important;color:#102347!important}
+.sidebar .side-foot small{color:#66748c!important}
+.kpis{gap:14px!important}
+.kpis .kpi{position:relative;isolation:isolate;min-height:172px!important;border:1px solid #ffe7dc!important;border-radius:17px!important;box-shadow:0 8px 18px #b944271b,0 2px 3px #db563218!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.kpis .kpi:hover{transform:translateY(-4px);box-shadow:0 13px 25px #b9442730!important}
+.kpis .kpi::after{content:'';position:absolute;z-index:-1;inset:auto 0 0 0;height:32%;background:linear-gradient(160deg,transparent 16%,#fff8f1bb 52%,#fff 100%);pointer-events:none}
+.kpis .kpi .symbol{width:30%!important;min-width:60px!important;font-size:38px!important;text-shadow:0 2px 6px #fff6!important}
+.kpis .kpi.green .symbol{background:linear-gradient(150deg,#ffac22,#ff7607)!important}
+.kpis .kpi.orange .symbol{background:linear-gradient(150deg,#ffd83a,#f5a800)!important}
+.kpis .kpi.purple .symbol{background:linear-gradient(150deg,#ff3447,#d50832)!important}
+.kpis .kpi.blue .symbol{background:linear-gradient(150deg,#ffa321,#fa7404)!important}
+.kpis .kpi>div:last-child{padding:22px 12px!important;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.kpis .kpi small{font-size:clamp(10px,.8vw,14px)!important;line-height:1.3!important;min-height:36px!important;font-weight:900!important;color:#0c2146!important}
+.kpis .kpi strong{font-size:clamp(30px,3vw,52px)!important;line-height:1.08!important;margin:7px 0!important;color:#d80c31!important;white-space:nowrap}
+.kpis .kpi.green strong,.kpis .kpi.blue strong{color:#f4770a!important}
+.kpis .kpi.orange strong{color:#efa500!important}
+.kpis .kpi span{font-size:clamp(10px,.72vw,13px)!important;line-height:1.35!important;color:#52617b!important}
+@media(max-width:1200px){.kpis .kpi{min-height:145px!important}.kpis .kpi .symbol{min-width:48px!important}.kpis .kpi>div:last-child{padding:12px 8px!important}}
+@media(max-width:700px){.sidebar nav{gap:7px!important}.sidebar .nav{min-height:48px!important;font-size:12px!important;padding:10px!important}.sidebar .nav::after{right:7px;font-size:18px}.kpis .kpi{min-height:120px!important}.kpis .kpi .symbol{width:58px!important}.kpis .kpi strong{font-size:30px!important}}

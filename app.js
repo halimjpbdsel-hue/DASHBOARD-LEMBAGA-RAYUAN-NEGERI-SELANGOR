@@ -30,7 +30,7 @@ function renderPbtMap(){
     const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(tile,0,0,12,12);
     const pixels=ctx.getImageData(0,0,12,12).data;let blue=0,yellow=0;
     for(let i=0;i<pixels.length;i+=4){const red=pixels[i],green=pixels[i+1],b=pixels[i+2];if(b>145&&b>red*1.25&&b>green*.95)blue++;if(red>185&&green>140&&b<105)yellow++}
-    if(blue>32&&yellow>32){const match=tile.src.match(new RegExp('tile/(\\\\d+)/(\\\\d+)/(\\\\d+)'));if(match){tile.src='https://tile.openstreetmap.org/'+match[1]+'/'+match[3]+'/'+match[2]+'.png';tile.crossOrigin='anonymous'}}
+    if(blue>32&&yellow>32){const parts=new URL(tile.src).pathname.split('/');const z=parts.at(-3),y=parts.at(-2),x=parts.at(-1);if(z&&y&&x){tile.src='https://tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png'}}
    }catch(error){/* Satellite tile inspection unavailable: retain the normal tile */}
   });
   satellite.on('tileerror',event=>{if(event.tile)event.tile.style.visibility='hidden';});

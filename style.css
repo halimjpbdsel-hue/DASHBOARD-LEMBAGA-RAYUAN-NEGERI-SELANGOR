@@ -87,6 +87,6 @@ main{margin-left:198px}
 
 /* Match existing PBT logo sprite to each bar chart row. */
 .pbt-bar-label{display:flex!important;align-items:center;gap:9px;min-width:0}
-.pbt-bar-crest{display:inline-block;flex:none;width:32px;height:32px;background-image:url('pbt-logo-sprite.png');background-size:128px 96px;background-repeat:no-repeat}
+.pbt-bar-crest{display:inline-block;flex:none;width:50px;height:50px;background-image:url('pbt-logo-sprite.png');background-size:200px 150px;background-repeat:no-repeat;image-rendering:auto;filter:contrast(1.12) saturate(1.08);background-color:#fff}
 .pbt-bar-label>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pbt-color-row{min-height:36px}
+.pbt-color-row{min-height:54px}

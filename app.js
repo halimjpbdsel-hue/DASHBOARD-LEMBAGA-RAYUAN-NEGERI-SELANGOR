@@ -13,6 +13,9 @@ fetch('data.json').then(r=>{if(!r.ok)throw Error('Gagal membaca data');return r.
 
 
 
+
+// Share one fixed color per PBT across the bar chart and all map basemaps.
+const PBT_MAP_COLORS={'MBSJ':'#e03f4b','MDSB':'#ef803c','MBDK':'#e5b735','MPKS':'#81ba68','MPKL':'#4eaa90','MPKJ':'#4c99af','MPSEPANG':'#5b82c9','MBPJ':'#7968b7','MBSA':'#a36ab5','MPAJ':'#cb6b9a','MPS':'#e18a5e','MPHS':'#6baaa0'};
 const OFFICIAL_PBT_CODES={
  'Majlis Daerah Sabak Bernam':'MDSB','Majlis Perbandaran Kuala Selangor':'MPKS',
  'Majlis Bandaraya Subang Jaya':'MBSJ','Majlis Bandaraya Petaling Jaya':'MBPJ',
@@ -62,7 +65,7 @@ function renderOfficialMap(){
  addLeafletPbtLogos();
  OFFICIAL_LAYER.eachLayer(layer=>{
    const name=layer.feature.properties.NAMA_PBT,code=OFFICIAL_PBT_CODES[name],n=counts[code]||0;
-   layer.setStyle({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.9:.76,color:code===chosen?'#e9b33b':'#fff',weight:code===chosen?4:1.5});
+   layer.setStyle({fillColor:PBT_MAP_COLORS[code]||'#cbd5e1',fillOpacity:code===chosen?.9:.76,color:code===chosen?'#e9b33b':'#fff',weight:code===chosen?4:1.5});
    layer.bindTooltip(esc(name)+' — '+n+' rayuan',{sticky:true});
  });
  const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen);
@@ -97,7 +100,7 @@ function renderGooglePbtMap(){
  if(DISTRICT_GEOJSON&&!GOOGLE_DISTRICT_LAYERS.length){DISTRICT_GEOJSON.features.forEach(f=>{const polys=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];polys.forEach(poly=>{const paths=poly.map(ring=>ring.map(([lng,lat])=>({lat,lng})));GOOGLE_DISTRICT_LAYERS.push(new google.maps.Polygon({paths,map:GOOGLE_MAP,strokeColor:'#f8bc33',strokeWeight:2.2,strokeOpacity:.95,fillOpacity:0,clickable:false,zIndex:3}))})})}
  addGooglePbtLogos();
  GOOGLE_DISTRICT_LAYERS.forEach(p=>p.setMap($('showDistrictBoundary').checked?GOOGLE_MAP:null));
- GOOGLE_LAYERS.forEach(p=>{p.setMap($('showPbtBoundary').checked?GOOGLE_MAP:null);const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
+ GOOGLE_LAYERS.forEach(p=>{p.setMap($('showPbtBoundary').checked?GOOGLE_MAP:null);const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:PBT_MAP_COLORS[code]||'#cbd5e1',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
  const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen),selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
  const rows=obj=>Object.entries(obj).map(([k,v])=>'<div class="official-map-row"><span>'+esc(k)+'</span><strong>'+v+'</strong></div>').join('');
  info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'Seluruh Negeri Selangor')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(count(selectedRows,'status'))||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(count(selectedRows,'jenis'))||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button>';

@@ -217,3 +217,6 @@ main{margin-left:198px}
 /* Larger, bold dashboard section headings (all requested analytical panels). */
 #overview .panel h2{font-size:17px!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.1px!important;color:#d71932!important;margin-bottom:18px!important}
 @media(max-width:700px){#overview .panel h2{font-size:15px!important;line-height:1.4!important}}
+
+/* Emphasize statewide summary title beside interactive PBT map. */
+#pbtMapSummary h3,.official-map-info h3,.official-map-summary h3{font-size:22px!important;font-weight:900!important;text-transform:uppercase!important;line-height:1.25!important;letter-spacing:.25px!important;color:#102347!important}

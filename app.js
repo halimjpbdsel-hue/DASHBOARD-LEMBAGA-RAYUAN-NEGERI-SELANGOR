@@ -21,10 +21,11 @@ const OFFICIAL_PBT_CODES={
  'Majlis Perbandaran Ampang Jaya':'MPAJ','Majlis Perbandaran Selayang':'MPS',
  'Majlis Bandaraya Shah Alam':'MBSA','Majlis Bandaraya Diraja Klang':'MBDK'
 };
-let OFFICIAL_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null;
+let OFFICIAL_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null,GOOGLE_MAP=null,GOOGLE_LAYERS=[];
 function renderOfficialMap(){
  const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!info)return;
  if(!OFFICIAL_GEOJSON){host.textContent='Memuatkan sempadan PBT…';return}
+ if(window.google?.maps&&window.GOOGLE_MAPS_API_KEY){renderGooglePbtMap();return}
  if(!window.L){host.textContent='Pustaka peta tidak tersedia.';return}
  const chosen=$('pbt').value,month=$('month').value,jenis=$('jenis').value;
  const comparison=DATA.filter(r=>(!month||r.tarikhRayuan.slice(5,7)===month)&&(!jenis||r.jenis===jenis));
@@ -55,4 +56,40 @@ function renderOfficialMap(){
  $('officialMapReset').onclick=()=>{$('pbt').value='';render();OFFICIAL_MAP.fitBounds(OFFICIAL_LAYER.getBounds(),{padding:[20,20]})};
  setTimeout(()=>OFFICIAL_MAP.invalidateSize(),0);
 }
+function renderGooglePbtMap(){
+ const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!OFFICIAL_GEOJSON||!window.google?.maps)return;
+ if(!GOOGLE_MAP){
+   if(OFFICIAL_MAP){OFFICIAL_MAP.remove();OFFICIAL_MAP=null;OFFICIAL_LAYER=null;}
+   host.textContent='';GOOGLE_MAP=new google.maps.Map(host,{center:{lat:3.18,lng:101.5},zoom:9,mapTypeId:'roadmap',mapTypeControl:true,streetViewControl:false});
+   const bounds=new google.maps.LatLngBounds();
+   OFFICIAL_GEOJSON.features.forEach(f=>{
+     const coords=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];
+     coords.forEach(poly=>{
+       const paths=poly.map(ring=>ring.map(([lng,lat])=>({lat,lng})));
+       paths.forEach(path=>path.forEach(p=>bounds.extend(p)));
+       const polygon=new google.maps.Polygon({paths,map:GOOGLE_MAP,strokeColor:'#ffffff',strokeWeight:1.5,fillColor:'#b4c3d4',fillOpacity:.65});
+       polygon.pbtName=f.properties.NAMA_PBT;polygon.addListener('click',()=>{$('pbt').value=OFFICIAL_PBT_CODES[polygon.pbtName]||'';render()});
+       GOOGLE_LAYERS.push(polygon);
+     });
+   });
+   GOOGLE_MAP.fitBounds(bounds);
+ }
+ const chosen=$('pbt').value,month=$('month').value,jenis=$('jenis').value;
+ const comparison=DATA.filter(r=>(!month||r.tarikhRayuan.slice(5,7)===month)&&(!jenis||r.jenis===jenis));
+ const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
+ GOOGLE_LAYERS.forEach(p=>{const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
+ const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen),selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
+ const rows=obj=>Object.entries(obj).map(([k,v])=>'<div class="official-map-row"><span>'+esc(k)+'</span><strong>'+v+'</strong></div>').join('');
+ info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'Seluruh Negeri Selangor')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(count(selectedRows,'status'))||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(count(selectedRows,'jenis'))||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button>';
+ $('officialMapReset').onclick=()=>{$('pbt').value='';render()};
+}
+function loadGoogleMapsIfConfigured(){
+ const key=window.GOOGLE_MAPS_API_KEY;
+ if(typeof key!=='string'||!key.trim())return;
+ const script=document.createElement('script');
+ script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback=googleMapsReady&loading=async';
+ script.async=true;script.onerror=()=>console.warn('Google Maps tidak dapat dimuatkan; peta sempadan sandaran dikekalkan.');
+ window.googleMapsReady=()=>renderOfficialMap();document.head.appendChild(script);
+}
+loadGoogleMapsIfConfigured();
 fetch('sempadan-pbt-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail sempadan tidak ditemui');return r.json()}).then(g=>{OFFICIAL_GEOJSON=g;renderOfficialMap()}).catch(e=>{const h=$('officialPbtMap');if(h)h.textContent='Gagal memuatkan peta: '+e.message});

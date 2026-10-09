@@ -21,7 +21,7 @@ const OFFICIAL_PBT_CODES={
  'Majlis Perbandaran Ampang Jaya':'MPAJ','Majlis Perbandaran Selayang':'MPS',
  'Majlis Bandaraya Shah Alam':'MBSA','Majlis Bandaraya Diraja Klang':'MBDK'
 };
-let OFFICIAL_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null,GOOGLE_MAP=null,GOOGLE_LAYERS=[];
+let OFFICIAL_GEOJSON=null,DISTRICT_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER=null,DISTRICT_LAYER=null,GOOGLE_MAP=null,GOOGLE_LAYERS=[],GOOGLE_DISTRICT_LAYERS=[];
 function renderOfficialMap(){
  const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!info)return;
  if(!OFFICIAL_GEOJSON){host.textContent='Memuatkan sempadan PBT…';return}
@@ -41,8 +41,12 @@ function renderOfficialMap(){
        layer.on('mouseout',()=>OFFICIAL_LAYER.resetStyle(layer));
      }
    }).addTo(OFFICIAL_MAP);
+   if(DISTRICT_GEOJSON){DISTRICT_LAYER=L.geoJSON(DISTRICT_GEOJSON,{style:{color:'#f8bc33',weight:2.2,fillOpacity:0,opacity:.95},interactive:false}).addTo(OFFICIAL_MAP)}
    OFFICIAL_MAP.fitBounds(OFFICIAL_LAYER.getBounds(),{padding:[20,20]});
  }
+ if(DISTRICT_GEOJSON&&!DISTRICT_LAYER){DISTRICT_LAYER=L.geoJSON(DISTRICT_GEOJSON,{style:{color:'#f8bc33',weight:2.2,fillOpacity:0,opacity:.95},interactive:false}).addTo(OFFICIAL_MAP)}
+ if(DISTRICT_LAYER){const enabled=$('showDistrictBoundary').checked;if(enabled&&!OFFICIAL_MAP.hasLayer(DISTRICT_LAYER))DISTRICT_LAYER.addTo(OFFICIAL_MAP);if(!enabled&&OFFICIAL_MAP.hasLayer(DISTRICT_LAYER))OFFICIAL_MAP.removeLayer(DISTRICT_LAYER)}
+ if(OFFICIAL_LAYER){const enabled=$('showPbtBoundary').checked;if(enabled&&!OFFICIAL_MAP.hasLayer(OFFICIAL_LAYER))OFFICIAL_LAYER.addTo(OFFICIAL_MAP);if(!enabled&&OFFICIAL_MAP.hasLayer(OFFICIAL_LAYER))OFFICIAL_MAP.removeLayer(OFFICIAL_LAYER)}
  OFFICIAL_LAYER.eachLayer(layer=>{
    const name=layer.feature.properties.NAMA_PBT,code=OFFICIAL_PBT_CODES[name],n=counts[code]||0;
    layer.setStyle({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.9:.76,color:code===chosen?'#e9b33b':'#fff',weight:code===chosen?4:1.5});
@@ -77,7 +81,9 @@ function renderGooglePbtMap(){
  const chosen=$('pbt').value,month=$('month').value,jenis=$('jenis').value;
  const comparison=DATA.filter(r=>(!month||r.tarikhRayuan.slice(5,7)===month)&&(!jenis||r.jenis===jenis));
  const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
- GOOGLE_LAYERS.forEach(p=>{const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
+ if(DISTRICT_GEOJSON&&!GOOGLE_DISTRICT_LAYERS.length){DISTRICT_GEOJSON.features.forEach(f=>{const polys=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];polys.forEach(poly=>{const paths=poly.map(ring=>ring.map(([lng,lat])=>({lat,lng})));GOOGLE_DISTRICT_LAYERS.push(new google.maps.Polygon({paths,map:GOOGLE_MAP,strokeColor:'#f8bc33',strokeWeight:2.2,strokeOpacity:.95,fillOpacity:0,clickable:false,zIndex:3}))})})}
+ GOOGLE_DISTRICT_LAYERS.forEach(p=>p.setMap($('showDistrictBoundary').checked?GOOGLE_MAP:null));
+ GOOGLE_LAYERS.forEach(p=>{p.setMap($('showPbtBoundary').checked?GOOGLE_MAP:null);const code=OFFICIAL_PBT_CODES[p.pbtName],n=counts[code]||0;p.setOptions({fillColor:n===0?'#cbd5e1':n/max>=.7?'#ac1739':n/max>=.4?'#e85a72':'#f3a5b0',fillOpacity:code===chosen?.85:.58,strokeColor:code===chosen?'#f3b72d':'#ffffff',strokeWeight:code===chosen?4:1.5})});
  const f=OFFICIAL_GEOJSON.features.find(f=>OFFICIAL_PBT_CODES[f.properties.NAMA_PBT]===chosen),selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
  const rows=obj=>Object.entries(obj).map(([k,v])=>'<div class="official-map-row"><span>'+esc(k)+'</span><strong>'+v+'</strong></div>').join('');
  info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'Seluruh Negeri Selangor')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(count(selectedRows,'status'))||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(count(selectedRows,'jenis'))||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button>';
@@ -93,3 +99,6 @@ function loadGoogleMapsIfConfigured(){
 }
 loadGoogleMapsIfConfigured();
 fetch('sempadan-pbt-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail sempadan tidak ditemui');return r.json()}).then(g=>{OFFICIAL_GEOJSON=g;renderOfficialMap()}).catch(e=>{const h=$('officialPbtMap');if(h)h.textContent='Gagal memuatkan peta: '+e.message});
+
+fetch('sempadan-daerah-selangor.geojson').then(r=>{if(!r.ok)throw Error('Fail daerah tidak ditemui');return r.json()}).then(g=>{DISTRICT_GEOJSON=g;renderOfficialMap()}).catch(e=>console.warn('Sempadan daerah:',e.message));
+['showPbtBoundary','showDistrictBoundary'].forEach(id=>$(id)?.addEventListener('change',renderOfficialMap));

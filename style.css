@@ -15,3 +15,6 @@
 
 /* Keep the basemap picker visible above all polygon overlays. */
 .official-map-panel .leaflet-control-layers{border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 12px #20304044;border-radius:8px}.official-map-panel .leaflet-control-layers-expanded{padding:10px 14px;font-size:12px;min-width:145px}.official-map-panel .leaflet-control-layers-list label{padding:5px 0;cursor:pointer}.official-map-panel .leaflet-control-layers-toggle{width:40px;height:40px}
+
+/* Larger monthly appeals chart, full width on desktop */
+.charts>.panel.wide:first-child{grid-column:1/-1}.charts>.panel.wide:first-child .chart svg{height:390px;display:block}.charts>.panel.wide:first-child .legend{margin-bottom:12px;font-size:12px;gap:12px}@media(max-width:700px){.charts>.panel.wide:first-child .chart svg{height:290px}}

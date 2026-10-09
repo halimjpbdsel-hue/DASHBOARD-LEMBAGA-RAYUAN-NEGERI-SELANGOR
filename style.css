@@ -127,3 +127,14 @@ main{margin-left:198px}
 #pbts .bartrack{height:13px!important;border-radius:4px!important}
 #pbts .barfill.pbt-color-fill{border-radius:4px!important}
 @media(max-width:650px){#pbts .barrow.pbt-color-row{grid-template-columns:minmax(75px,27%) minmax(0,1fr) 22px!important;gap:6px!important}}
+
+/* PBT map legend: one vertical column, abbreviations only. */
+.official-map-canvas .pbt-map-legend{max-width:170px!important;min-width:108px!important;bottom:24px!important;left:12px!important;padding:9px 11px!important}
+.official-map-canvas .pbt-legend-items{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;max-height:290px!important;overflow-y:auto!important}
+.official-map-canvas .pbt-legend-item{display:flex!important;gap:7px!important;align-items:center!important}
+.official-map-canvas .pbt-legend-item small{display:none!important}
+.official-map-canvas .pbt-legend-heading{font-size:11px!important}
+/* North arrow is an overlay, not a map marker. */
+.official-map-canvas .map-north-arrow{position:absolute;top:14px;left:60px;z-index:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:rgba(255,255,255,.94);border:1px solid #d6dce5;border-radius:5px;padding:5px 9px;box-shadow:0 1px 5px #0004;color:#10243c;font-weight:800;font-size:13px;line-height:1.05;pointer-events:none}
+.official-map-canvas .north-arrow-symbol{font-size:23px;line-height:1.1;color:#d51d32}
+@media(max-width:600px){.official-map-canvas .pbt-map-legend{max-width:145px!important}.official-map-canvas .pbt-legend-items{max-height:200px!important}.official-map-canvas .map-north-arrow{left:54px;top:12px;padding:4px 7px}}

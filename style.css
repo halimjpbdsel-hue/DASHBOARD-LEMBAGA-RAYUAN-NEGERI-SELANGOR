@@ -174,3 +174,21 @@ main{margin-left:198px}
 .kpis .kpi span{font-size:clamp(10px,.72vw,13px)!important;line-height:1.35!important;color:#52617b!important}
 @media(max-width:1200px){.kpis .kpi{min-height:145px!important}.kpis .kpi .symbol{min-width:48px!important}.kpis .kpi>div:last-child{padding:12px 8px!important}}
 @media(max-width:700px){.sidebar nav{gap:7px!important}.sidebar .nav{min-height:48px!important;font-size:12px!important;padding:10px!important}.sidebar .nav::after{right:7px;font-size:18px}.kpis .kpi{min-height:120px!important}.kpis .kpi .symbol{width:58px!important}.kpis .kpi strong{font-size:30px!important}}
+
+/* Fix sidebar proportions to match approved mockup: single-line menu labels. */
+@media(min-width:701px){
+ .sidebar{width:285px!important}
+ main{margin-left:285px!important}
+ .sidebar nav{padding:12px 12px!important;gap:13px!important}
+ .sidebar .nav{width:100%!important;min-width:0!important;min-height:73px!important;white-space:nowrap!important;flex-wrap:nowrap!important;justify-content:flex-start!important;padding:16px 43px 16px 23px!important;font-size:17px!important;line-height:1.25!important;letter-spacing:-.15px!important}
+ .sidebar .nav::after{right:18px!important;font-size:28px!important}
+ .suo-brand{height:215px!important;padding:12px!important}
+ .suo-brand img{width:195px!important;height:195px!important;max-width:100%!important;object-fit:contain!important}
+}
+@media(min-width:701px) and (max-width:1100px){
+ .sidebar{width:252px!important}
+ main{margin-left:252px!important}
+ .sidebar .nav{font-size:15px!important;padding-left:16px!important;padding-right:33px!important}
+ .suo-brand{height:175px!important}
+ .suo-brand img{width:160px!important;height:160px!important}
+}

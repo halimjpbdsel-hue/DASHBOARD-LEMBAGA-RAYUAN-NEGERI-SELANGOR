@@ -21,12 +21,9 @@ function renderPbtMap(){
  if(!window.L){host.textContent='Pustaka peta tidak dapat dimuatkan. Semak sambungan internet.';return}
  if(!LEAFLET_MAP){
   LEAFLET_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true}).setView([3.18,101.47],9);
-  const streets=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19});
-  // EOX Sentinel-2 imagery replaces the previous Esri source completely.
-  const satellite=L.tileLayer('https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg',{attribution:'Sentinel-2 cloudless © EOX IT Services GmbH (modified Copernicus Sentinel data 2020)',maxNativeZoom:14,maxZoom:19});
-  satellite.on('tileerror',event=>{if(event.tile)event.tile.style.visibility='hidden';});
-  satellite.addTo(LEAFLET_MAP);
-  L.control.layers({'Satelit Sentinel-2':satellite,'Peta Jalan':streets},null,{position:'topright'}).addTo(LEAFLET_MAP);
+  // Use a single road basemap to avoid the persistent corrupted satellite tile.
+  const streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19});
+  streets.addTo(LEAFLET_MAP);
   MAP_LAYER=L.geoJSON(BOUNDARIES,{style:()=>({color:'#ffffff',weight:1.8,fillOpacity:.42}),onEachFeature:(feature,layer)=>{const code=feature.properties.code;MAP_FEATURES[code]=layer;layer.on('click',()=>selectMapPbt(code));layer.on('mouseover',()=>layer.setStyle({weight:3,color:'#f6c453'}));layer.on('mouseout',()=>MAP_LAYER.resetStyle(layer))}}).addTo(LEAFLET_MAP);
   LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});
   $('mapHome').onclick=()=>{LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});};

@@ -95,3 +95,9 @@ main{margin-left:198px}
 .pbt-color-row{min-height:46px!important;column-gap:12px}
 .pbt-bar-crest{width:42px;height:42px;background-size:168px 126px}
 .pbt-bar-label{gap:8px}
+
+/* Compact PBT chart: remove the inherited 13px row margins. */
+#pbts .barrow.pbt-color-row{margin:2px 0!important;min-height:43px!important;grid-template-columns:minmax(125px,1fr) 2fr 32px}
+#pbts .pbt-bar-crest{width:40px;height:40px;background-size:160px 120px;display:inline-flex;align-items:center;justify-content:center}
+#pbts .pbt-bar-crest img{display:block;width:100%;height:100%;object-fit:contain}
+#pbts .pbt-bar-label{gap:7px}

@@ -209,3 +209,7 @@ main{margin-left:198px}
 /* Header skyline slightly larger, per approved preview; other dashboard elements unchanged. */
 @media(min-width:1251px){.suo-header .header-skyline{width:440px!important;height:114px!important;right:0!important;bottom:0!important;object-fit:contain!important;object-position:right bottom!important}.suo-header .header-text{max-width:calc(100% - 440px)!important}}
 @media(min-width:951px) and (max-width:1250px){.suo-header .header-skyline{width:260px!important;height:110px!important;right:0!important;object-fit:contain!important}.suo-header .header-text{max-width:calc(100% - 260px)!important}}
+
+/* Make the actual skyline artwork visibly larger, not merely its image box. */
+@media(min-width:1251px){.suo-header .header-skyline{width:440px!important;height:114px!important;transform:scale(1.38)!important;transform-origin:right bottom!important;right:0!important;bottom:0!important;opacity:1!important}.suo-header .header-text{z-index:2!important}}
+@media(min-width:951px) and (max-width:1250px){.suo-header .header-skyline{transform:scale(1.2)!important;transform-origin:right bottom!important;opacity:1!important}}

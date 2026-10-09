@@ -107,3 +107,7 @@ main{margin-left:198px}
 #pbts .pbt-bar-crest{width:46px!important;height:46px!important;background-size:184px 138px!important;background-color:transparent!important;filter:none!important}
 #pbts .pbt-bar-crest img{width:46px;height:46px;object-fit:contain;image-rendering:auto}
 #pbts .pbt-bar-label{gap:9px!important}
+
+/* Restore exact sprite coordinates: source sprite has 50px cells (4 columns). */
+#pbts .pbt-bar-crest{width:50px!important;height:50px!important;background-size:200px 150px!important;background-color:transparent!important;filter:none!important}
+#pbts .barrow.pbt-color-row{margin:0!important;min-height:52px!important}

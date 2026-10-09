@@ -28,7 +28,7 @@ let OFFICIAL_GEOJSON=null,DISTRICT_GEOJSON=null,OFFICIAL_MAP=null,OFFICIAL_LAYER
 function renderPbtMapLegend(){
  const host=$('pbtMapLegend');if(!host)return;
  const names=Object.entries(OFFICIAL_PBT_CODES).map(([name,code])=>({name,code}));
- host.innerHTML='<strong class="pbt-legend-heading">Petunjuk Warna PBT</strong><div class="pbt-legend-items">'+names.map(({name,code})=>'<div class="pbt-legend-item"><span class="pbt-legend-swatch" style="background:'+PBT_MAP_COLORS[code]+'"></span><span>'+esc(code)+'</span><small title="'+esc(name)+'">'+esc(name)+'</small></div>').join('')+'</div>';
+ host.innerHTML='<strong class="pbt-legend-heading">Petunjuk Warna PBT</strong><div class="pbt-legend-items">'+names.map(({name,code})=>'<div class="pbt-legend-item"><span class="pbt-legend-swatch" style="background:'+PBT_MAP_COLORS[code]+'"></span><span>'+esc(code)+'</span></div>').join('')+'</div>';
 }
 function renderOfficialMap(){
  const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!info)return;
@@ -41,12 +41,12 @@ function renderOfficialMap(){
  const counts=count(comparison,'pbt'),max=Math.max(1,...Object.values(counts));
  if(!OFFICIAL_MAP){
    OFFICIAL_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true,preferCanvas:true});
-   // Street basemap is the reliable default. Satellite is an optional layer.
+   // Default to Esri satellite imagery; keep street and light layers selectable.
    const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});
    const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors © CARTO'});
    const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Imagery © Esri and contributors'});
    const basemaps={'Peta Jalan':street,'Peta Cerah':light,'Satelit (Esri)':satellite};
-   street.addTo(OFFICIAL_MAP);
+   satellite.addTo(OFFICIAL_MAP);
    BASEMAP_CONTROL=L.control.layers(basemaps,null,{position:'topright',collapsed:true}).addTo(OFFICIAL_MAP);
    // Keep a working street map when satellite imagery fails to load.
    let satelliteErrors=0;
@@ -86,7 +86,7 @@ function renderGooglePbtMap(){
  const host=$('officialPbtMap'),info=$('officialMapInfo');if(!host||!OFFICIAL_GEOJSON||!window.google?.maps)return;
  if(!GOOGLE_MAP){
    if(OFFICIAL_MAP){OFFICIAL_MAP.remove();OFFICIAL_MAP=null;OFFICIAL_LAYER=null;}
-   host.textContent='';GOOGLE_MAP=new google.maps.Map(host,{center:{lat:3.18,lng:101.5},zoom:9,mapTypeId:'roadmap',mapTypeControl:true,streetViewControl:false});
+   host.textContent='';GOOGLE_MAP=new google.maps.Map(host,{center:{lat:3.18,lng:101.5},zoom:9,mapTypeId:'satellite',mapTypeControl:true,streetViewControl:false});
    const bounds=new google.maps.LatLngBounds();
    OFFICIAL_GEOJSON.features.forEach(f=>{
      const coords=f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[f.geometry.coordinates];

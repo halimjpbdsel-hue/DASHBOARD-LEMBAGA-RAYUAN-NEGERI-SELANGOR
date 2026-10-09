@@ -31,7 +31,7 @@ function renderPbtMap(){
  }
  MAP_LAYER.eachLayer(layer=>{const code=layer.feature.properties.code,n=counts[code]||0;layer.setStyle({color:code===selected?'#ffd166':'#ffffff',weight:code===selected?4:1.8,fillColor:n===0?'#a6b5c8':n/max>=.7?'#b20f30':n/max>=.4?'#ed5366':'#ffb1bb',fillOpacity:n===0?.2:.56});layer.bindTooltip(esc(layer.feature.properties.name)+'<br>'+n+' rayuan',{sticky:true})});
  const features=BOUNDARIES.features;
- summary.innerHTML='<div class="map-total"><strong>'+filtered.length+'</strong><span>Rayuan dipaparkan</span></div><p class="muted">Klik kawasan PBT pada peta satelit atau pilih PBT di bawah.</p><div class="map-pbt-list">'+features.map(f=>{let c=f.properties.code,n=counts[c]||0;return '<button class="map-pbt-row '+(selected===c?'active':'')+'" data-pbt="'+esc(c)+'"><span>'+esc(f.properties.name)+'</span><b>'+n+'</b></button>'}).join('')+'</div><button class="smallbutton map-clear" data-pbt="">Papar semua PBT</button>';
+ summary.innerHTML='<div class="map-total"><strong>'+filtered.length+'</strong><span>Rayuan dipaparkan</span></div><p class="muted">Klik kawasan PBT pada peta atau pilih PBT di bawah.</p><div class="map-pbt-list">'+features.map(f=>{let c=f.properties.code,n=counts[c]||0;return '<button class="map-pbt-row '+(selected===c?'active':'')+'" data-pbt="'+esc(c)+'"><span>'+esc(f.properties.name)+'</span><b>'+n+'</b></button>'}).join('')+'</div><button class="smallbutton map-clear" data-pbt="">Papar semua PBT</button>';
  if(MAP_POPUP_PBT)showPbtPopup(MAP_POPUP_PBT);else if($('mapPopup'))$('mapPopup').hidden=true;
  setTimeout(()=>LEAFLET_MAP.invalidateSize(),0);
 }

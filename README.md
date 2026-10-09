@@ -27,3 +27,6 @@ Jalankan pelayan HTTP dari folder ini, misalnya `python -m http.server 8000`, ke
 
 ## Privasi data untuk laman awam
 `data.json` mengandungi hanya bilangan kes, tarikh, PBT, jenis, status dan tarikh pendengaran/keputusan. Nama perayu, alamat, tajuk permohonan dan ahli panel tidak dipaparkan. **Perhatian:** versi awal `data.json` pernah dimuat naik ke sejarah git bagi repositori awam; memadam data daripada versi terkini **tidak memadam sejarah Git**. Pentadbir perlu menilai keperluan penyusunan semula sejarah repositori atau migrasi ke repositori baharu dan mendapatkan nasihat pegawai keselamatan maklumat. Jangan simpan data terperingkat atau maklumat peribadi dalam GitHub Pages awam.
+
+## Peta sempadan PBT
+Peta interaktif menggunakan geometri sempadan PBT Selangor yang dipermudahkan daripada fail GeoJSON dibekalkan. 12 kawasan PBT dipaparkan, termasuk kawasan yang mempunyai sifar rayuan. Klik kawasan atau senarai PBT untuk menapis carta, KPI dan jadual. Data bilangan kes diperoleh daripada `data.json`, bukannya angka rekaan. Bentuk geometri telah dipermudahkan untuk prestasi paparan; **bukan peta ukur atau rujukan sempadan perundangan**. Jangan terbitkan data kes peribadi di laman awam.

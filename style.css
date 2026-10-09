@@ -52,3 +52,19 @@ th{background:#fff0e6}
 tr:hover td{background:#fff9f2}
 .link{color:#cf2535}
 footer{color:#85746c}
+
+
+/* Approved SUO header: supplied logo, close title alignment, skyline on the far right. */
+.sidebar{width:198px;border-right:0;box-shadow:none;background:linear-gradient(180deg,#fffefb,#fff7ec)}
+main{margin-left:198px}
+.suo-brand{height:118px;display:flex;align-items:center;justify-content:center;padding:10px 16px 6px}
+.suo-brand img{width:110px;height:110px;object-fit:contain;display:block}
+.sidebar nav{padding-top:8px}
+.suo-header{position:relative;min-height:118px;height:118px;padding:18px 20px 16px 14px;overflow:hidden;background:linear-gradient(100deg,#fff 0%,#fff 57%,#fff7e5 100%);border-bottom:1px solid #f2e2d2;justify-content:flex-start}
+.suo-header .header-text{position:relative;z-index:1;min-width:0;margin:0;padding:0;max-width:calc(100% - 350px)}
+.suo-header .eyebrow{color:#eb4a17;font-size:13px;letter-spacing:.5px;font-weight:800;white-space:nowrap}
+.suo-header h1{color:#090909;font-size:clamp(20px,2.05vw,33px);font-weight:900;letter-spacing:-.8px;line-height:1.1;margin:8px 0 0;white-space:nowrap}
+.suo-header .header-skyline{position:absolute;right:0;bottom:0;width:340px;height:110px;object-fit:contain;object-position:right bottom;pointer-events:none}
+@media(max-width:1250px){.suo-header .header-text{max-width:calc(100% - 200px)}.suo-header .header-skyline{width:210px;opacity:.8}.suo-header h1{font-size:clamp(17px,2vw,26px)}.suo-header .eyebrow{font-size:11px}}
+@media(max-width:950px){.suo-header{min-height:118px;height:auto}.suo-header .header-text{max-width:100%}.suo-header h1{white-space:normal;max-width:90%}.suo-header .header-skyline{opacity:.22;width:230px}}
+@media(max-width:700px){.sidebar{width:100%;position:relative;inset:auto}.suo-brand{height:95px}.suo-brand img{width:88px;height:88px}main{margin-left:0}.suo-header{padding:18px 16px;min-height:110px}.suo-header .eyebrow{white-space:normal;font-size:10px}.suo-header h1{font-size:21px;max-width:100%}}

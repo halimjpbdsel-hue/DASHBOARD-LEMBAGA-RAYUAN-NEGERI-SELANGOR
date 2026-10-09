@@ -24,3 +24,6 @@ Jalankan pelayan HTTP dari folder ini, misalnya `python -m http.server 8000`, ke
 - Purata tempoh hanya dikira jika tarikh rayuan dan keputusan tersedia; tarikh pendengaran berulang ditunjukkan sebagai entri berasingan.
 - Tiada penyegerakan automatik dengan Excel; jana semula `data.json` apabila rekod berubah.
 - Logo rasmi dan peta PBT tidak disertakan kerana aset/sumber GIS yang disahkan belum dibekalkan.
+
+## Privasi data untuk laman awam
+`data.json` mengandungi hanya bilangan kes, tarikh, PBT, jenis, status dan tarikh pendengaran/keputusan. Nama perayu, alamat, tajuk permohonan dan ahli panel tidak dipaparkan. **Perhatian:** versi awal `data.json` pernah dimuat naik ke sejarah git bagi repositori awam; memadam data daripada versi terkini **tidak memadam sejarah Git**. Pentadbir perlu menilai keperluan penyusunan semula sejarah repositori atau migrasi ke repositori baharu dan mendapatkan nasihat pegawai keselamatan maklumat. Jangan simpan data terperingkat atau maklumat peribadi dalam GitHub Pages awam.

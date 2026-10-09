@@ -138,3 +138,8 @@ main{margin-left:198px}
 .official-map-canvas .map-north-arrow{position:absolute;top:14px;left:60px;z-index:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:rgba(255,255,255,.94);border:1px solid #d6dce5;border-radius:5px;padding:5px 9px;box-shadow:0 1px 5px #0004;color:#10243c;font-weight:800;font-size:13px;line-height:1.05;pointer-events:none}
 .official-map-canvas .north-arrow-symbol{font-size:23px;line-height:1.1;color:#d51d32}
 @media(max-width:600px){.official-map-canvas .pbt-map-legend{max-width:145px!important}.official-map-canvas .pbt-legend-items{max-height:200px!important}.official-map-canvas .map-north-arrow{left:54px;top:12px;padding:4px 7px}}
+
+/* Transparent north compass based on user reference; retain original compact position. */
+.official-map-canvas .map-north-arrow{width:43px!important;height:49px!important;box-sizing:border-box!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;top:14px!important;left:60px!important;line-height:normal!important;pointer-events:none!important}
+.official-map-canvas .map-north-arrow svg{width:43px!important;height:48px!important;display:block!important;filter:drop-shadow(0 1px 1px rgba(255,255,255,.75))}
+@media(max-width:600px){.official-map-canvas .map-north-arrow{top:12px!important;left:54px!important;padding:0!important}}

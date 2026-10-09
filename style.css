@@ -220,3 +220,30 @@ main{margin-left:198px}
 
 /* Emphasize statewide summary title beside interactive PBT map. */
 #pbtMapSummary h3,.official-map-info h3,.official-map-summary h3{font-size:22px!important;font-weight:900!important;text-transform:uppercase!important;line-height:1.25!important;letter-spacing:.25px!important;color:#102347!important}
+
+/* Final typography polish: bold previously regular dark dashboard text. */
+main .filters label,
+main .filters select,
+main .panel p:not(.muted),
+main .panel h3,
+main .panel h4,
+main .panel td,
+main .panel th,
+main .panel .barrow,
+main .panel .official-map-row,
+main .panel .map-pbt-row,
+main .panel .pie3d-legend-row,
+main .panel .legend,
+main .panel .legend-list,
+main .panel .subtle,
+main .panel .decisioncol,
+main .panel .detail-row,
+main .kpi span,
+main .kpi small,
+main footer,
+aside.sidebar .side-foot,
+aside.sidebar .side-foot small {
+  font-weight:700;
+}
+main .panel h2,main .panel h3,main .panel h4{font-weight:900}
+main .panel .muted{font-weight:600}

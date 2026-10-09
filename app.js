@@ -78,7 +78,7 @@ function renderOfficialMap(){
  const selectedRows=chosen?comparison.filter(r=>r.pbt===chosen):comparison;
  const statuses=count(selectedRows,'status'),types=count(selectedRows,'jenis');
  const rows=obj=>Object.entries(obj).map(([k,v])=>'<div class="official-map-row"><span>'+esc(k)+'</span><strong>'+v+'</strong></div>').join('');
- info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'Seluruh Negeri Selangor')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(statuses)||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(types)||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button><p class="muted">Sempadan daripada fail GeoJSON dibekalkan; jumlah kes daripada data Excel dashboard.</p>';
+ info.innerHTML='<h3>'+(f?esc(f.properties.NAMA_PBT):'SELURUH NEGERI SELANGOR')+'</h3><div class="official-map-number">'+selectedRows.length+' <small>jumlah rayuan</small></div><h4>Status keputusan</h4>'+(rows(statuses)||'<p>Tiada rekod</p>')+'<h4>Jenis rayuan</h4>'+(rows(types)||'<p>Tiada rekod</p>')+'<button class="smallbutton" id="officialMapReset">Papar semua PBT</button><p class="muted">Sempadan daripada fail GeoJSON dibekalkan; jumlah kes daripada data Excel dashboard.</p>';
  $('officialMapReset').onclick=()=>{$('pbt').value='';render();OFFICIAL_MAP.fitBounds(OFFICIAL_LAYER.getBounds(),{padding:[20,20]})};
  setTimeout(()=>OFFICIAL_MAP.invalidateSize(),0);
 }

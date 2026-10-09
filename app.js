@@ -21,9 +21,21 @@ function renderPbtMap(){
  if(!window.L){host.textContent='Pustaka peta tidak dapat dimuatkan. Semak sambungan internet.';return}
  if(!LEAFLET_MAP){
   LEAFLET_MAP=L.map(host,{zoomControl:true,scrollWheelZoom:true}).setView([3.18,101.47],9);
-  const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles © Esri, Maxar, Earthstar Geographics, and the GIS User Community',maxZoom:19});
   const streets=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19});
-  satellite.on('tileerror',event=>{const tile=event.tile;if(tile){tile.style.visibility='hidden';}if(!LEAFLET_MAP.hasLayer(streets)){LEAFLET_MAP.removeLayer(satellite);streets.addTo(LEAFLET_MAP);}});satellite.addTo(LEAFLET_MAP);L.control.layers({'Satelit':satellite,'Peta Jalan':streets},null,{position:'topright'}).addTo(LEAFLET_MAP);
+  const satellite=L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Imagery © Esri and contributors',maxZoom:19,crossOrigin:'anonymous'});
+  satellite.on('tileload',event=>{
+   const tile=event.tile;
+   try{
+    const canvas=document.createElement('canvas');canvas.width=12;canvas.height=12;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(tile,0,0,12,12);
+    const pixels=ctx.getImageData(0,0,12,12).data;let blue=0,yellow=0;
+    for(let i=0;i<pixels.length;i+=4){const red=pixels[i],green=pixels[i+1],b=pixels[i+2];if(b>145&&b>red*1.25&&b>green*.95)blue++;if(red>185&&green>140&&b<105)yellow++}
+    if(blue>32&&yellow>32){const parts=new URL(tile.src).pathname.split('/');const z=parts.at(-3),y=parts.at(-2),x=parts.at(-1);if(z&&y&&x){tile.src='https://tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png'}}
+   }catch(error){/* Satellite tile inspection unavailable: retain the normal tile */}
+  });
+  satellite.on('tileerror',event=>{if(event.tile)event.tile.style.visibility='hidden';});
+  satellite.addTo(LEAFLET_MAP);
+  L.control.layers({'Satelit':satellite,'Peta Jalan':streets},null,{position:'topright'}).addTo(LEAFLET_MAP);
   MAP_LAYER=L.geoJSON(BOUNDARIES,{style:()=>({color:'#ffffff',weight:1.8,fillOpacity:.42}),onEachFeature:(feature,layer)=>{const code=feature.properties.code;MAP_FEATURES[code]=layer;layer.on('click',()=>selectMapPbt(code));layer.on('mouseover',()=>layer.setStyle({weight:3,color:'#f6c453'}));layer.on('mouseout',()=>MAP_LAYER.resetStyle(layer))}}).addTo(LEAFLET_MAP);
   LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});
   $('mapHome').onclick=()=>{LEAFLET_MAP.fitBounds(MAP_LAYER.getBounds(),{padding:[15,15]});};

@@ -111,3 +111,12 @@ main{margin-left:198px}
 /* Restore exact sprite coordinates: source sprite has 50px cells (4 columns). */
 #pbts .pbt-bar-crest{width:50px!important;height:50px!important;background-size:200px 150px!important;background-color:transparent!important;filter:none!important}
 #pbts .barrow.pbt-color-row{margin:0!important;min-height:52px!important}
+
+/* Reference-matched PBT chart: exact sprite cells, compact rows, left logos, navy labels. */
+#pbts .barrow.pbt-color-row{display:grid!important;grid-template-columns:minmax(160px,32%) minmax(0,1fr) 28px!important;gap:12px!important;min-height:51px!important;margin:0!important;align-items:center!important;font-size:12px!important}
+#pbts .pbt-bar-label{display:flex!important;align-items:center!important;gap:16px!important;min-width:0!important;color:#10234c!important;font-weight:500!important}
+#pbts .pbt-bar-crest{display:inline-block!important;flex:0 0 50px!important;width:50px!important;height:50px!important;background-image:url('pbt-logo-sprite.png')!important;background-repeat:no-repeat!important;background-size:200px 150px!important;background-color:transparent!important;filter:none!important;border:0!important;image-rendering:auto!important}
+#pbts .bartrack{height:15px!important;border-radius:6px!important;background:#e9edf2!important}
+#pbts .barfill.pbt-color-fill{border-radius:6px!important}
+#pbts .barrow b{font-weight:700!important;color:#10234c!important}
+@media(max-width:650px){#pbts .barrow.pbt-color-row{grid-template-columns:minmax(110px,33%) minmax(0,1fr) 20px!important;gap:7px!important}#pbts .pbt-bar-label{gap:6px!important;font-size:10px!important}#pbts .pbt-bar-crest{transform:scale(.82);transform-origin:left center;flex-basis:42px!important}}
